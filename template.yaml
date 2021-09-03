@@ -4,11 +4,11 @@ Description: S3 Uploader - sample application
 
 Resources:
   # HTTP API
-  MyApi:
+  ArrendUploadApi:
     Type: AWS::Serverless::HttpApi
     Properties:
       # CORS configuration - this is open for development only and should be restricted in prod.
-      # See https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-httpapi-httpapicorsconfiguration.html   
+      # See https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-httpapi-httpapicorsconfiguration.html
       CorsConfiguration:
         AllowMethods:
           - GET
@@ -16,14 +16,14 @@ Resources:
           - DELETE
           - OPTIONS
         AllowHeaders:
-          - "*"   
-        AllowOrigins: 
-          - "*"      
+          - "*"
+        AllowOrigins:
+          - "*"
 
   ## Lambda functions
   UploadRequestFunction:
     # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Type: AWS::Serverless::Function 
+    Type: AWS::Serverless::Function
     Properties:
       CodeUri: getSignedURL/
       Handler: app.handler
@@ -32,27 +32,27 @@ Resources:
       MemorySize: 128
       Environment:
         Variables:
-          UploadBucket: !Ref S3UploadBucket  
+          UploadBucket: !Ref ArrendUploadBucket
       Policies:
         - S3WritePolicy:
-            BucketName: !Ref S3UploadBucket
+            BucketName: !Ref ArrendUploadBucket
         ## This permission allows the Lambda function to request signed URLs
         ## for objects that will be publicly readable. Uncomment if you want this ACL.
-        # - Statement:
-        #   - Effect: Allow
-        #     Resource: !Sub 'arn:aws:s3:::${S3UploadBucket}/'
-        #     Action:
-        #       - s3:putObjectAcl
+        - Statement:
+          - Effect: Allow
+            Resource: !Sub 'arn:aws:s3:::${ArrendUploadBucket}/'
+            Action:
+              - s3:putObjectAcl
       Events:
         UploadAssetAPI:
           Type: HttpApi
           Properties:
             Path: /uploads
             Method: get
-            ApiId: !Ref MyApi  
+            ApiId: !Ref ArrendUploadApi
 
   ## S3 bucket
-  S3UploadBucket:
+  ArrendUploadBucket:
     Type: AWS::S3::Bucket
     Properties:
       CorsConfiguration:
@@ -70,8 +70,8 @@ Resources:
 Outputs:
   APIendpoint:
     Description: "HTTP API endpoint URL"
-    Value: !Sub "https://${MyApi}.execute-api.${AWS::Region}.amazonaws.com"
-  S3UploadBucketName:
-    Description: "S3 bucket for application uploads"
-    Value: !Ref 'S3UploadBucket'    
+    Value: !Sub "https://${ArrendUploadApi}.execute-api.${AWS::Region}.amazonaws.com"
+  ArrendUploadBucketName:
+    Description: "S3 bucket for Arrend uploads"
+    Value: !Ref 'ArrendUploadBucket'
 

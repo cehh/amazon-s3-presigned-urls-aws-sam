@@ -8,9 +8,9 @@
   <body>
     <div id="app">
       <h1>S3 Uploader Test</h1>
-  
+
       <div v-if="!image">
-        <h2>Select an image</h2>
+        <h2>Select a pdf file</h2>
         <input type="file" @change="onFileChange">
       </div>
       <div v-else>
@@ -18,15 +18,13 @@
         <button v-if="!uploadURL" @click="removeImage">Remove image</button>
         <button v-if="!uploadURL" @click="uploadImage">Upload image</button>
       </div>
-      <h2 v-if="uploadURL">Success! Image uploaded to bucket.</h2>
+      <h2 v-if="uploadURL">Success! File uploaded to bucket.</h2>
     </div>
-  
+
     <script>
       const MAX_IMAGE_SIZE = 1000000
 
-      /* ENTER YOUR ENDPOINT HERE */
-
-      const API_ENDPOINT = '<< ENTER HERE >>' // e.g. https://ab1234ab123.execute-api.us-east-1.amazonaws.com/uploads
+      const API_ENDPOINT = 'https://81do2rsna7.execute-api.us-east-1.amazonaws.com/uploads'
 
       new Vue({
         el: "#app",
@@ -44,9 +42,9 @@
             // var image = new Image()
             let reader = new FileReader()
             reader.onload = (e) => {
-              console.log('length: ', e.target.result.includes('data:image/jpeg'))
-              if (!e.target.result.includes('data:image/jpeg')) {
-                return alert('Wrong file type - JPG only.')
+              console.log('length: ', e.target.result.includes('data:application/pdf'))
+              if (!e.target.result.includes('data:application/pdf')) {
+                return alert('Wrong file type - PDF only.')
               }
               if (e.target.result.length > MAX_IMAGE_SIZE) {
                 return alert('Image is loo large.')
@@ -64,7 +62,10 @@
             // Get the presigned URL
             const response = await axios({
               method: 'GET',
-              url: API_ENDPOINT
+              url: API_ENDPOINT,
+              params: {
+                name: "testfile.pdf",  // CAMBIAR por nombre del file deseado, por ejemplo chasis_anexo1.pdf
+              }
             })
             console.log('Response: ', response)
             console.log('Uploading: ', this.image)
@@ -73,7 +74,7 @@
             for (var i = 0; i < binary.length; i++) {
               array.push(binary.charCodeAt(i))
             }
-            let blobData = new Blob([new Uint8Array(array)], {type: 'image/jpeg'})
+            let blobData = new Blob([new Uint8Array(array)], {type: 'application/pdf'})
             console.log('Uploading to: ', response.uploadURL)
             const result = await fetch(response.uploadURL, {
               method: 'PUT',
