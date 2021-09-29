@@ -4,7 +4,7 @@ Description: S3 Uploader - sample application
 
 Resources:
   # HTTP API
-  ArrendUploadApi:
+  NorgasUploadApi:
     Type: AWS::Serverless::HttpApi
     Properties:
       # CORS configuration - this is open for development only and should be restricted in prod.
@@ -32,15 +32,15 @@ Resources:
       MemorySize: 128
       Environment:
         Variables:
-          UploadBucket: !Ref ArrendUploadBucket
+          UploadBucket: !Ref NorgasUploadBucket
       Policies:
         - S3WritePolicy:
-            BucketName: !Ref ArrendUploadBucket
+            BucketName: !Ref NorgasUploadBucket
         ## This permission allows the Lambda function to request signed URLs
         ## for objects that will be publicly readable. Uncomment if you want this ACL.
         - Statement:
           - Effect: Allow
-            Resource: !Sub 'arn:aws:s3:::${ArrendUploadBucket}/'
+            Resource: !Sub 'arn:aws:s3:::${NorgasUploadBucket}/'
             Action:
               - s3:putObjectAcl
       Events:
@@ -49,10 +49,10 @@ Resources:
           Properties:
             Path: /uploads
             Method: get
-            ApiId: !Ref ArrendUploadApi
+            ApiId: !Ref NorgasUploadApi
 
   ## S3 bucket
-  ArrendUploadBucket:
+  NorgasUploadBucket:
     Type: AWS::S3::Bucket
     Properties:
       CorsConfiguration:
@@ -70,8 +70,8 @@ Resources:
 Outputs:
   APIendpoint:
     Description: "HTTP API endpoint URL"
-    Value: !Sub "https://${ArrendUploadApi}.execute-api.${AWS::Region}.amazonaws.com"
-  ArrendUploadBucketName:
-    Description: "S3 bucket for Arrend uploads"
-    Value: !Ref 'ArrendUploadBucket'
+    Value: !Sub "https://${NorgasUploadApi}.execute-api.${AWS::Region}.amazonaws.com"
+  NorgasUploadBucketName:
+    Description: "S3 bucket for Norgas uploads"
+    Value: !Ref 'NorgasUploadBucket'
 

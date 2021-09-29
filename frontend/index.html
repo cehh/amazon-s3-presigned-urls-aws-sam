@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Upload file to S3</title>
+    <title>Upload image to S3</title>
     <script src="https://unpkg.com/vue"></script>
     <script src="https://unpkg.com/axios@0.2.1/dist/axios.min.js"></script>
   </head>
@@ -10,7 +10,7 @@
       <h1>S3 Uploader Test</h1>
 
       <div v-if="!image">
-        <h2>Select a pdf file</h2>
+        <h2>Select a jpeg image</h2>
         <input type="file" @change="onFileChange">
       </div>
       <div v-else>
@@ -18,13 +18,13 @@
         <button v-if="!uploadURL" @click="removeImage">Remove image</button>
         <button v-if="!uploadURL" @click="uploadImage">Upload image</button>
       </div>
-      <h2 v-if="uploadURL">Success! File uploaded to bucket.</h2>
+      <h2 v-if="uploadURL">Success! Image uploaded to bucket.</h2>
     </div>
 
     <script>
       const MAX_IMAGE_SIZE = 1000000
 
-      const API_ENDPOINT = 'https://81do2rsna7.execute-api.us-east-1.amazonaws.com/uploads'
+      const API_ENDPOINT = 'https://5urxdn1bx3.execute-api.us-east-1.amazonaws.com/uploads'
 
       new Vue({
         el: "#app",
@@ -42,9 +42,9 @@
             // var image = new Image()
             let reader = new FileReader()
             reader.onload = (e) => {
-              console.log('length: ', e.target.result.includes('data:application/pdf'))
-              if (!e.target.result.includes('data:application/pdf')) {
-                return alert('Wrong file type - PDF only.')
+              console.log('length: ', e.target.result.includes('data:image/jpeg'))
+              if (!e.target.result.includes('data:image/jpeg')) {
+                return alert('Wrong file type - JPEG images only.')
               }
               if (e.target.result.length > MAX_IMAGE_SIZE) {
                 return alert('Image is loo large.')
@@ -64,7 +64,7 @@
               method: 'GET',
               url: API_ENDPOINT,
               params: {
-                name: "testfile.pdf",  // CAMBIAR por nombre del file deseado, por ejemplo chasis_anexo1.pdf
+                name: "testfile.jpeg",  // CAMBIAR por nombre del file deseado
               }
             })
             console.log('Response: ', response)
@@ -74,7 +74,7 @@
             for (var i = 0; i < binary.length; i++) {
               array.push(binary.charCodeAt(i))
             }
-            let blobData = new Blob([new Uint8Array(array)], {type: 'application/pdf'})
+            let blobData = new Blob([new Uint8Array(array)], {type: 'image/jpeg'})
             console.log('Uploading to: ', response.uploadURL)
             const result = await fetch(response.uploadURL, {
               method: 'PUT',
