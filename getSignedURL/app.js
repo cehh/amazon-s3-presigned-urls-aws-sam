@@ -30,12 +30,18 @@ exports.handler = async (event) => {
 const getUploadURL = async function(event) {
   console.log(JSON.stringify(event));
   const Key = event.queryStringParameters.name
+
+  let ContentType = 'image/jpeg'
+  if ('contentType' in event.queryStringParameters) {
+    ContentType = event.queryStringParameters.contentType
+  }
+
   // Get signed URL from S3
   const s3Params = {
     Bucket: process.env.UploadBucket,
     Key,
     Expires: URL_EXPIRATION_SECONDS,
-    ContentType: 'image/jpeg',
+    ContentType: ContentType,
 
     // This ACL makes the uploaded object publicly readable. You must also uncomment
     // the extra permission for the Lambda function in the SAM template.
